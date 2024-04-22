@@ -9,7 +9,6 @@ import torch.utils.data as dataf
 import torch.nn as nn
 from scipy import io
 import HyperX
-import losses
 import metric
 from LGG_CNN import GlobalLocalGatedConvNet
 
@@ -141,8 +140,7 @@ def train_10times():
             total = sum([param.nelement() for param in cnn.parameters()])
             print("Number of parameter: %.2fM" % (total / 1e6))
             optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)  # optimize all cnn parameters
-            loss_fun1 = losses.ConstractiveLoss()  # the target label is not one-hotted
-            loss_fun2 = nn.CrossEntropyLoss()
+            loss_fun = nn.CrossEntropyLoss()
             show_feature_map = []
             BestAcc = 0
             tic1 = time.time()
@@ -158,21 +156,10 @@ def train_10times():
                     bsz = labels.shape[0]
 
                     features3, output, factor1, factor2, factor3 = cnn(images, points)  # fake_img:重构结果，output:分类结果
-
-                    # 对比损失
-                    # contrastive_loss = loss_fun1(features3, labels)  # 将其注释
-                    # contrastive_loss = loss_fun1(s_cat, s_label_cat)
                     # 分类损失
-                    classifier_loss = loss_fun2(output, labels)  # 交叉熵，分类误差
+                    classifier_loss = loss_fun(output, labels)  # 交叉熵，分类误差
                     # 总损失
                     total_loss = classifier_loss
-                    # print("epoch",epoch)
-                    # print("step",step)
-                    # print("classifier_loss", classifier_loss.data.cpu().numpy())
-                    # print("contrastive_loss", contrastive_loss.data.cpu().numpy())
-
-                    # total_loss = classifier_loss + contrastive_loss
-
                     cnn.zero_grad()
                     total_loss.backward()
                     optimizer.step()
@@ -388,8 +375,7 @@ def train_1times():
             total = sum([param.nelement() for param in cnn.parameters()])
             print("Number of parameter: %.2fM" % (total / 1e6))
             optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)  # optimize all cnn parameters
-            loss_fun1 = losses.ConstractiveLoss()  # the target label is not one-hotted
-            loss_fun2 = nn.CrossEntropyLoss()
+            loss_fun = nn.CrossEntropyLoss()
             show_feature_map = []
             BestAcc = 0
             tic1 = time.time()
@@ -408,21 +394,10 @@ def train_1times():
                     bsz = labels.shape[0]
 
                     features3, output, factor1, factor2, factor3 = cnn(images, points)  # fake_img:重构结果，output:分类结果
-
-                    # 对比损失
-                    # contrastive_loss = loss_fun1(features3, labels)  # 将其注释
-                    # contrastive_loss = loss_fun1(s_cat, s_label_cat)
                     # 分类损失
-                    classifier_loss = loss_fun2(output, labels)  # 交叉熵，分类误差
+                    classifier_loss = loss_fun(output, labels)  # 交叉熵，分类误差
                     # 总损失
                     total_loss = classifier_loss
-                    # print("epoch",epoch)
-                    # print("step",step)
-                    # print("classifier_loss", classifier_loss.data.cpu().numpy())
-                    # print("contrastive_loss", contrastive_loss.data.cpu().numpy())
-
-                    # total_loss = classifier_loss + contrastive_loss
-
                     cnn.zero_grad()
                     total_loss.backward()
                     optimizer.step()
