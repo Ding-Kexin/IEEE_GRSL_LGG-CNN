@@ -4,7 +4,7 @@ The repository contains the implementations for "**Local-Global Gated Convolutio
  You can find [the PDF of this paper](https://ieeexplore.ieee.org/document/10315219?source=authoralert).
 ![LGG-CNN](https://github.com/Ding-Kexin/LGG-CNN/blob/main/LGG-CNN_framework.jpg)
 ****
-# Train CALC
+# Train LGG-CNN
 ``` 
 python Model/demo.py
 ``` 
